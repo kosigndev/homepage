@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordRush | Kosign Development</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<style>        
+.correct {
+            border-color: #28a745;
+            font-weight: bold;
+            background-color: #d4edda;
+        }
+</style>
+
+<body class="bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 min-h-screen font-sans text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Kosign Development</h1>
+      <nav class="space-x-6 text-sm font-medium">
+        <a href="index.html" class="hover:text-yellow-300 transition">Home</a>
+        <a href="about.html" class="hover:text-yellow-300 transition">About</a>
+        <a href="services.html" class="hover:text-yellow-300 transition">Services</a>
+        <a href="contact.html" class="hover:text-yellow-300 transition">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-16">
+    <h2 class="text-5xl font-extrabold text-purple-700 mb-4">WordRush</h2>
+    <p id="instruction" class="text-lg text-gray-600 max-w-xl mx-auto">Try to guess the word as fast as you can! A letter will be revealed every 10 seconds.</p>
+    <button id="start" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full text-lg font-semibold transition">Start Game</button>
+  </section>
+
+  <!-- Game Area -->
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <div class="grid grid-cols-6 gap-4 justify-center mb-6">
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+      <input type="text" class="letter-box w-full aspect-square text-4xl font-bold text-center rounded-xl border-4 border-gray-800 bg-white transition" maxlength="1" disabled>
+    </div>
+    <div id="timer" class="text-xl font-semibold text-green-600 mb-4">Elapsed Time: 0.00s</div>
+    <div id="message" class="text-xl font-medium text-gray-700"></div>
+    <button id="restart" class="mt-6 hidden bg-yellow-400 hover:bg-yellow-500 text-black px-6 py-3 rounded-full text-lg font-semibold transition">Restart</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white py-6 mt-16">
+    <div class="text-center text-sm">
+      © 2025 Kosign Development. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Game Logic -->
+  <script>
+    // Full script stays unchanged, paste from your original JS block above.
+    // ...
+            document.addEventListener("DOMContentLoaded", function() {
+
+            const words = [
+                "BOTTLE", "PLANET", "CANDLE", "ROCKET", "GUITAR", "MARKET", "BREEZE", "WINDOW", "COUPLE", "TUNNEL",
+                "CHOICE", "SCHEME", "BANISH", "MIRROR", "FALCON", "CANYON", "BORDER", "BOTTLE", "VISION", "NATURE",
+                "WIZARD", "FATHER", "ANCHOR", "CIRCLE", "TACTIC", "SILVER", "GADGET", "PEPPER", "VOYAGE", "SECURE",
+                "MUSCLE", "MARBLE", "GARLIC", "INDOOR", "COSMIC", "MORALE", "CAMERA", "SURVEY", "JUNGLE", "PIGEON",
+                "NEBULA", "BASKET", "EXPECT", "SPIRIT", "SQUARE", "REVEAL", "CREATE", "MOBILE", "SAFETY", "ETHNIC",
+                "WANDER", "ZEPHYR", "GALAXY", "ESTATE", "MYSTIC", "GOLDEN", "DELETE", "SUMMER", "WINTER", "DANGER",
+                "SINGLE", "VORTEX", "SALMON", "ZODIAC", "RETIRE", "BLAZER", "SEASON", "DOUBLE", "ROTATE", "FROZEN",
+                "LOUNGE", "HUNTER", "ISLAND", "JUMPER", "KARATE", "LUSTER", "MONKEY", "NUGGET", "OUTFIT", "POCKET",
+                "QUIVER", "RANGER", "SPEARL", "TUNNEL", "URANUS", "VICTOR", "ANNUAL", "BUDGET", "YELLOW", "SPRING",
+                "AETHER", "SLEEVE", "CRADLE", "WINNER", "DRAGON", "LABOUR", "GRAVEL", "RETAIN", "RELIEF", "BARREL"
+            ];
+
+            function pickRandomWord() {
+                word = words[Math.floor(Math.random() * words.length)]; // Pick a random word
+                console.log("Selected word:", word); // Debugging: Log the chosen word in the console
+                }
+            let timeElapsed = 0;
+            let interval;
+            let nextReveal = 10;
+            let currentIndex = 1;
+            let running = false;
+
+            const timerDisplay = document.getElementById("timer");
+            const startButton = document.getElementById("start");
+            const restartButton = document.getElementById("restart");
+            const letterBoxes = document.querySelectorAll(".letter-box");
+            const message = document.getElementById("message");
+
+            function startGame() {
+                startButton.style.display = "none";
+
+                pickRandomWord();
+                resetLetterBoxes();
+
+                letterBoxes[currentIndex].disabled = false;
+                letterBoxes[currentIndex].focus();
+                startTime = performance.now();
+                running = true;
+                requestAnimationFrame(updateTimer);
+
+            }
+
+            function resetLetterBoxes() {
+                currentIndex = 1;
+                timeElapsed = 0;
+                nextReveal = 10;
+                letterBoxes.forEach((box, index) => {
+                    if (index === 0) {
+                        box.value = word[0]; // Keep the first letter revealed
+                    } else {
+                            box.value = "";
+                            box.disabled = true;
+                            box.classList.remove("correct", "wrong", "pop");
+                    }
+                    });
+                    timerDisplay.style.display = "block"; // Show timer again
+                    timerDisplay.textContent = "0.00s"; // Reset timer display
+                    message.textContent = ""; // Clear previous game message
+                    restartButton.style.display = "none"; // Hide restart button
+
+                    document.getElementById("instruction").style.display = "block";
+            }
+
+            function startTimer() {
+                interval = setInterval(() => {
+                    timeElapsed += 0.01;
+                    timerDisplay.textContent = timeElapsed.toFixed(2) + "s";
+                    
+                    if (Math.floor(timeElapsed) === nextReveal) {
+                        revealLetter();
+                        nextReveal += 10;
+                    }
+                }, 10);
+            }
+
+            function updateTimer() {
+                if (!running) return;
+                let now = performance.now();
+                timeElapsed = (now - startTime) / 1000;
+                timerDisplay.textContent = "Elapsed Time: " + timeElapsed.toFixed(2) + "s";
+                
+                if (Math.floor(timeElapsed) >= nextReveal) {
+                    revealLetter();
+                    nextReveal += 10;
+                }
+                
+                requestAnimationFrame(updateTimer);
+
+            }
+
+            function revealLetter() {
+                if (currentIndex < word.length) {
+                    letterBoxes[currentIndex].value = word[currentIndex];
+                    letterBoxes[currentIndex].classList.add("pop");
+                    letterBoxes[currentIndex].disabled = true;
+                    currentIndex++;
+                    if (currentIndex < word.length) {
+                        letterBoxes[currentIndex].disabled = false;
+                        letterBoxes[currentIndex].focus();
+                    } else {
+                        endGame(false);
+                    }
+                }
+            }
+
+            letterBoxes.forEach((box, index) => {
+                if (index > 0) {
+                    box.addEventListener("input", function () {
+                        this.value = this.value.toUpperCase();
+                        if (this.value === word[index]) {
+                            this.classList.add("correct");
+                            this.disabled = true;
+                            currentIndex++;
+                            if (currentIndex < word.length) {
+                                letterBoxes[currentIndex].disabled = false;
+                                letterBoxes[currentIndex].focus();
+                            } else {
+                                endGame(true);
+                            }
+                        } else {
+                            this.classList.add("wrong");
+                            setTimeout(() => {
+                                this.value = "";
+                                this.classList.remove("wrong");
+                            }, 20);
+                        }
+                    });
+                }
+            });
+
+            function endGame(userWon) {
+                running = false;
+                document.getElementById('instruction').style.display = 'none';
+                document.getElementById('instruction').style.display = 'none';
+                document.getElementById("timer").style.display = "none"; // Hide the timer
+                message.textContent = userWon 
+                ? `Congratulations! You guessed the word in ${timeElapsed.toFixed(2)} seconds.` 
+                : "You didn't guess the word in time!";
+
+                restartButton.style.display = "block";
+            }
+
+            startButton.addEventListener("click", startGame);
+            restartButton.addEventListener("click", startGame);
+        });
+  </script>
+</body>
+</html>
